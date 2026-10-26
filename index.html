@@ -125,7 +125,7 @@ footer{color:var(--muted);font-size:.82rem;margin-top:28px}
     <p class="hint">Toque nas optativas pela ordem em que as prefere, até 5: aparecem por ordem em «As minhas preferências», no fim da lista. Tocar outra vez retira. Pode escolher optativas sem vagas, mas só são possíveis se alguém sair delas durante a troca: não há qualquer garantia e é por sua conta e risco. Se preferir ficar na sua optativa a ir para alguma das outras, escolha «Manter a minha unidade curricular optativa atual» logo a seguir às que pretende.</p>
     <label class="field" for="q">Procurar optativa</label>
     <input id="q" type="search" placeholder="Nome ou código" autocomplete="off">
-    <label class="filtro"><input id="soVagas" type="checkbox" checked> Mostrar só optativas com vagas</label>
+    <label class="filtro"><input id="soVagas" type="checkbox"> Mostrar só optativas com vagas</label>
     <div class="ucgrid" id="lista"></div>
     <h3 id="tituloPrefs" tabindex="-1">As minhas preferências</h3>
     <ol class="prefs" id="prefs"></ol>
@@ -229,7 +229,7 @@ const PRAZO = "";           // ex.: "até 30 de outubro, às 23h59"; vazio = nã
 /* INTERFACE */
 const MAX = 5;
 const POR_ID = Object.fromEntries([...DADOS.ofertas, MANTER].map(o => [o.id, o]));
-const estado = {ano: 0, prefs: [], q: "", anoPendente: 0, soVagas: true};
+const estado = {ano: 0, prefs: [], q: "", anoPendente: 0, soVagas: false};
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[ch]));
 const attr = s => String(s).replace(/["\\]/g, "\\$&");
