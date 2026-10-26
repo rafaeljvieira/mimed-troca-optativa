@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Troca de optativas 2026/2027</title>
+<style>
+:root{
+  --bg:#ffffff; --ink:#1f2328; --muted:#5c6370; --line:#dcdfe3;
+  --accent:#1a1a1a; --onaccent:#ffffff; --brand:#ffda1a; --brandline:#e8c200; --onbrand:#1a1a1a; --yellow:#ffda1a; --soft:#f5f6f8; --ok:#2e6b45; --okbg:#eef5f0; --warn:#5c6370; --warnbg:#f3f4f6; --bad:#8f2f28; --badbg:#f8eeed;
+  --card:#ffffff; --chip:#f5f6f8;
+  color-scheme:light dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1d21; --ink:#e8eaed; --muted:#a3a9b3; --line:#363a41;
+    --accent:#f1f1f1; --onaccent:#1b1d21; --brand:#ffda1a; --brandline:#ffda1a; --onbrand:#1a1a1a; --yellow:#ffda1a; --soft:#24272c; --okbg:#1d2e24; --ok:#8fcaa3; --warnbg:#25282d; --warn:#a3a9b3; --badbg:#35201e; --bad:#e3a19a;
+    --card:#212429; --chip:#272a30;
+  }
+}
+:root[data-theme="light"]{color-scheme:light}
+:root[data-theme="dark"]{
+  --bg:#1b1d21; --ink:#e8eaed; --muted:#a3a9b3; --line:#363a41;
+  --accent:#f1f1f1; --onaccent:#1b1d21; --brand:#ffda1a; --brandline:#ffda1a; --onbrand:#1a1a1a; --yellow:#ffda1a; --soft:#24272c; --okbg:#1d2e24; --ok:#8fcaa3; --warnbg:#25282d; --warn:#a3a9b3; --badbg:#35201e; --bad:#e3a19a;
+  --card:#212429; --chip:#272a30;
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.55}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px 48px}
+header.band{background:var(--bg);color:var(--ink);border-bottom:1px solid var(--line);border-top:6px solid var(--brand)}
+header.band .wrap{padding-top:28px;padding-bottom:22px}
+header h1{font-size:1.5rem;line-height:1.2;margin:0 0 6px;font-weight:600;letter-spacing:0}
+header p{margin:0;font-size:.98rem;max-width:58ch}
+.mode{display:flex;gap:0;margin:22px 0 8px;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.mode button{flex:1;font:inherit;font-weight:500;font-size:.95rem;padding:12px 10px;border:0;background:transparent;color:var(--ink);cursor:pointer;line-height:1.25}
+.mode button[aria-pressed="true"]{background:var(--accent);color:var(--onaccent)}
+.btn:focus-visible,.prefs .acoes button:focus-visible,input[type=search]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* dentro de caixas com overflow:hidden, o contorno fica para dentro para não ser cortado */
+.mode button:focus-visible,.uc:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.mode button[aria-pressed="true"]:focus-visible{outline-color:var(--onaccent);outline-offset:-4px}
+h2{font-size:1.15rem;margin:30px 0 8px;font-weight:600}
+h3{font-size:1rem;margin:20px 0 8px;font-weight:600}
+.hint{color:var(--muted);font-size:.92rem;margin:0 0 12px}
+label.field{display:block;font-weight:600;margin:16px 0 6px}
+input[type=search]{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:100%;max-width:420px;margin:0 0 10px}
+.ucgrid{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.uc{font:inherit;font-size:.92rem;text-align:left;width:100%;display:grid;grid-template-columns:22px 1fr auto;gap:2px 10px;align-items:start;padding:10px 12px;border:0;border-top:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;line-height:1.3}
+.ucgrid>.uc:first-child{border-top:0}
+.uc:hover:not([disabled]){background:var(--chip)}
+.uc .bx{grid-row:1/span 2;width:18px;height:18px;margin-top:1px;border:1.5px solid var(--muted);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:transparent}
+.uc .nm{font-weight:500}
+.uc .ec{color:var(--muted);font-size:.78rem;white-space:nowrap}
+.uc .sb{grid-column:2/span 2;color:var(--muted);font-size:.8rem}
+.uc[aria-pressed="true"]{background:var(--okbg)}
+.uc[aria-pressed="true"] .bx{background:var(--accent);border-color:var(--accent);color:var(--onaccent)}
+.uc[disabled]{opacity:.55;cursor:not-allowed}
+.uc[disabled] .bx{border-style:dashed}
+@media (max-width:480px){.uc .ec{grid-column:2/span 2;white-space:normal}}
+.tag{display:inline-block;font-size:.72rem;font-weight:600;padding:2px 7px;border-radius:999px;margin-left:6px;vertical-align:1px}
+.tag.ins{background:var(--ink);color:var(--bg)}
+.tag.sem{background:var(--badbg);color:var(--bad);margin-left:0}
+.box{border-radius:6px;padding:12px 14px;margin:10px 0;font-size:.93rem}
+.box.warn{background:var(--warnbg);color:var(--ink);border:1px solid var(--line)}
+.box>strong{display:block;margin-bottom:2px}
+.btn{font:inherit;font-weight:500;font-size:.9rem;line-height:1.3;padding:9px 14px;border-radius:4px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:inline-block;text-decoration:none;margin:0}
+.btn:hover:not([disabled]){border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--onaccent)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.send{border-radius:6px;padding:16px;margin:18px 0;background:var(--soft);border:1px solid var(--line);border-top:4px solid var(--brand);color:var(--ink)}
+.send h3{margin:0 0 6px}
+.send p{margin:6px 0;font-size:.93rem}
+.botoes{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.campos{list-style:none;margin:10px 0;padding:0;border:1px solid var(--line);border-radius:6px;background:var(--card)}
+.campos li{display:grid;gap:0;padding:8px 10px;border-top:1px solid var(--line)}
+.campos li:first-child{border-top:0}
+.campos .cr{grid-column:1;font-size:.8rem;color:var(--muted)}
+.campos .cv{grid-column:1;font-size:.93rem;font-weight:500;overflow-wrap:anywhere}
+.prefs{list-style:none;margin:0 0 16px;padding:0;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.prefs li{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;padding:8px 10px;border-top:1px solid var(--line);background:var(--card)}
+.prefs li:first-child{border-top:0}
+.prefs .n{font-weight:700}
+.prefs .acoes{display:flex;gap:4px}
+.prefs .acoes button{font:inherit;min-width:36px;min-height:36px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);cursor:pointer}
+.prefs .acoes button:disabled{opacity:.35;cursor:default}
+.prefs .vazio{color:var(--muted);font-size:.92rem;display:block}
+pre.pedido{white-space:pre-wrap;word-break:break-word;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:10px;font-size:.85rem}
+.confirmar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.confirmar span{flex:1 1 100%}
+#tituloPrefs:focus{outline:none}
+details.rules{margin:26px 0 0;border-top:1px solid var(--line);padding-top:14px}
+summary{cursor:pointer;font-weight:600}
+details ul{padding-left:20px;font-size:.92rem}
+details li{margin:6px 0}
+footer{color:var(--muted);font-size:.82rem;margin-top:28px}
+@media (min-width:640px){header h1{font-size:1.75rem}}
+</style>
+</head>
+<body>
+<header class="band">
+  <div class="wrap">
+    <h1>Troca de optativas 2026/2027</h1>
+    <p>Se já estás inscrito(a) numa optativa e queres trocar para outra, escolhe aqui até 5 optativas, por ordem de preferência. A página prepara o teu pedido e abre o formulário já preenchido.</p>
+  </div>
+</header>
+<main class="wrap">
+  <div class="box warn" style="margin-top:20px;border-left:6px solid var(--ink)"><strong>Antes de começares:</strong>
+    <div>O pedido é analisado pela Unidade de Gestão Académica por ordem de chegada e é aceite caso a caso, só se não inviabilizar o funcionamento da UC em que já estás inscrito(a). Até à decisão, manténs a optativa atual. <span id="avisoVagas"></span><span id="avisoPrazo"></span></div>
+  </div>
+  <section>
+    <h2>1. Em que ano é a tua optativa?</h2>
+    <p class="hint">É o ano da optativa a que te inscreveste, que pode não ser o ano que frequentas.</p>
+    <div class="mode" id="anos" role="group" aria-label="Ano da optativa"></div>
+    <div id="confAno" role="status"></div>
+  </section>
+  <section id="passo2" hidden>
+    <h2>2. Para que optativas queres ir?</h2>
+    <p class="hint">Toca nas optativas pela ordem em que as preferes, até 5: aparecem por ordem em «As minhas preferências», no fim da lista. Tocar outra vez retira. Só aparecem as optativas com vagas. Se preferires ficar na tua optativa a ir para alguma das outras, escolhe «Manter a minha unidade curricular optativa atual» logo a seguir às que queres.</p>
+    <label class="field" for="q">Procurar optativa</label>
+    <input id="q" type="search" placeholder="Nome ou código" autocomplete="off">
+    <div class="ucgrid" id="lista"></div>
+    <h3 id="tituloPrefs" tabindex="-1">As minhas preferências</h3>
+    <ol class="prefs" id="prefs"></ol>
+  </section>
+  <section id="envio"></section>
+  <details class="rules">
+    <summary>Como funciona e o que precisas de saber</summary>
+    <ul>
+      <li>O pedido é enviado pelo formulário (MS Forms), com a tua conta U.Porto.</li>
+      <li>Os pedidos são analisados pela <strong>Unidade de Gestão Académica</strong> por ordem de chegada, ou seja, pela hora a que submetes o formulário.</li>
+      <li>Cada pedido é aceite caso a caso e <strong>só se não inviabilizar o funcionamento da UC em que já estás inscrito(a)</strong>.</li>
+      <li><strong>Só podes enviar um pedido</strong>, e depois de enviado não o podes alterar. Se precisares de mudar alguma coisa, escreve para <a href="mailto:ensino_pregraduado@med.up.pt">ensino_pregraduado@med.up.pt</a>.</li>
+      <li>Até à decisão, manténs a optativa em que estás inscrito(a).</li>
+      <li id="regraVagas"></li>
+      <li>«Manter a minha unidade curricular optativa atual» é uma preferência como as outras: se nenhuma das optativas acima dela for possível, ficas na atual, e as que estão abaixo dela não são consideradas.</li>
+      <li>Não precisas de indicar a optativa em que estás: a Unidade de Gestão Académica confirma-a. Se a escolheres como preferência, essa preferência é ignorada.</li>
+    </ul>
+  </details>
+  <footer id="rodape"></footer>
+</main>
+<script>
+/* DADOS-INICIO */
+const DADOS = {"retrato":"26/10/2026 às 09:36","provisorio":false,"ofertas":[{"id":"OPT_MMED01-S2","codigo":"OPT_MMED01","nome":"A adesão terapêutica - da prescrição ao comportamento de adesão","sem":2,"vagas":24,"anos":[4,5]},{"id":"OPT_MMED02-S2","codigo":"OPT_MMED02","nome":"Administração hospitalar","sem":2,"vagas":20,"anos":[4,5]},{"id":"OPT_MMED03-S1","codigo":"OPT_MMED03","nome":"Água - na saúde e na doença","sem":1,"vagas":12,"anos":[4,5]},{"id":"OPT_MMED03-S2","codigo":"OPT_MMED03","nome":"Água - na saúde e na doença","sem":2,"vagas":12,"anos":[4,5]},{"id":"OPT_MMED06-S1","codigo":"OPT_MMED06","nome":"Antropologia médica - corpo-pessoa, a medicina para lá da evidência","sem":1,"vagas":29,"anos":[4,5]},{"id":"OPT_MMED08-S1","codigo":"OPT_MMED08","nome":"Artroscopia","sem":1,"vagas":2,"anos":[5]},{"id":"OPT_MMED08-S2","codigo":"OPT_MMED08","nome":"Artroscopia","sem":2,"vagas":2,"anos":[5]},{"id":"OPT_MMED09-S2","codigo":"OPT_MMED09","nome":"Assistência ao parto","sem":2,"vagas":10,"anos":[5]},{"id":"OPT_MMED10-S2","codigo":"OPT_MMED10","nome":"Avaliação da qualidade e segurança do doente","sem":2,"vagas":1,"anos":[1,2,4,5]},{"id":"OPT_MMED17-S2","codigo":"OPT_MMED17","nome":"Cirurgia cerebral endoscópica","sem":2,"vagas":5,"anos":[5]},{"id":"OPT_MMED19-S1","codigo":"OPT_MMED19","nome":"Cirurgia da obesidade","sem":1,"vagas":1,"anos":[5]},{"id":"OPT_MMED19-S2","codigo":"OPT_MMED19","nome":"Cirurgia da obesidade","sem":2,"vagas":1,"anos":[5]},{"id":"OPT_MMED21-S1","codigo":"OPT_MMED21","nome":"Cirurgia esofagogastroduodenal","sem":1,"vagas":1,"anos":[5]},{"id":"OPT_MMED21-S2","codigo":"OPT_MMED21","nome":"Cirurgia esofagogastroduodenal","sem":2,"vagas":1,"anos":[5]},{"id":"OPT_MMED22-S1","codigo":"OPT_MMED22","nome":"Cirurgia laparoscópica","sem":1,"vagas":1,"anos":[5]},{"id":"OPT_MMED22-S2","codigo":"OPT_MMED22","nome":"Cirurgia laparoscópica","sem":2,"vagas":1,"anos":[5]},{"id":"OPT_MMED25-S1","codigo":"OPT_MMED25","nome":"Coloproctologia","sem":1,"vagas":1,"anos":[5]},{"id":"OPT_MMED25-S2","codigo":"OPT_MMED25","nome":"Coloproctologia","sem":2,"vagas":1,"anos":[5]},{"id":"OPT_MMED118-S1","codigo":"OPT_MMED118","nome":"Competências Não-Técnicas no Trabalho em Equipas de Saúde","sem":1,"vagas":2,"anos":[3,4,5]},{"id":"OPT_MMED118-S2","codigo":"OPT_MMED118","nome":"Competências Não-Técnicas no Trabalho em Equipas de Saúde","sem":2,"vagas":19,"anos":[4,5]},{"id":"OPT_MMED26-S1","codigo":"OPT_MMED26","nome":"Comunicação & marketing estratégico em saúde","sem":1,"vagas":29,"anos":[3,4,5]},{"id":"OPT_MMED26-S2","codigo":"OPT_MMED26","nome":"Comunicação & marketing estratégico em saúde","sem":2,"vagas":28,"anos":[1,2,4,5]},{"id":"OPT_MMED29-S2","codigo":"OPT_MMED29","nome":"Contacto precoce com os utentes/doentes e suas famílias I","sem":2,"vagas":29,"anos":[1]},{"id":"OPT_MMED31-S2","codigo":"OPT_MMED31","nome":"Cuidados críticos em queimados","sem":2,"vagas":3,"anos":[5]},{"id":"OPT_MMED129-S1","codigo":"OPT_MMED129","nome":"Dor Crónica - Estágio Optativo","sem":1,"vagas":6,"anos":[5]},{"id":"OPT_MMED129-S2","codigo":"OPT_MMED129","nome":"Dor Crónica - Estágio Optativo","sem":2,"vagas":6,"anos":[5]},{"id":"OPT_MMED117-S1","codigo":"OPT_MMED117","nome":"Epidemiologia do Cancro","sem":1,"vagas":13,"anos":[4]},{"id":"OPT_MMED126-S1","codigo":"OPT_MMED126","nome":"Estágio Optativo em Medicina de Precisão","sem":1,"vagas":30,"anos":[4,5]},{"id":"OPT_MMED126-S2","codigo":"OPT_MMED126","nome":"Estágio Optativo em Medicina de Precisão","sem":2,"vagas":29,"anos":[4,5]},{"id":"OPT_MMED36-S1","codigo":"OPT_MMED36","nome":"Estudos in silico para medicina personalizada","sem":1,"vagas":16,"anos":[3,4,5]},{"id":"OPT_MMED36-S2","codigo":"OPT_MMED36","nome":"Estudos in silico para medicina personalizada","sem":2,"vagas":26,"anos":[4,5]},{"id":"OPT_MMED37-S1","codigo":"OPT_MMED37","nome":"Extração de conhecimento de dados em saúde","sem":1,"vagas":3,"anos":[3,4,5]},{"id":"OPT_MMED41-S1","codigo":"OPT_MMED41","nome":"Formação social e humana","sem":1,"vagas":72,"anos":[3,4,5]},{"id":"OPT_MMED44-S2","codigo":"OPT_MMED44","nome":"Gerontopsiquiatria","sem":2,"vagas":2,"anos":[5]},{"id":"OPT_MMED50-S2","codigo":"OPT_MMED50","nome":"Infeção e Cancro","sem":2,"vagas":5,"anos":[2]},{"id":"OPT_MMED52-S1","codigo":"OPT_MMED52","nome":"Integridade académica","sem":1,"vagas":25,"anos":[3,4,5]},{"id":"OPT_MMED52-S2","codigo":"OPT_MMED52","nome":"Integridade académica","sem":2,"vagas":26,"anos":[1,2,4,5]},{"id":"OPT_MMED109-S1","codigo":"OPT_MMED109","nome":"Inteligência Artificial e Tomada de Decisão em Medicina","sem":1,"vagas":13,"anos":[4]},{"id":"OPT_MMED109-S2","codigo":"OPT_MMED109","nome":"Inteligência Artificial e Tomada de Decisão em Medicina","sem":2,"vagas":15,"anos":[4]},{"id":"OPT_MMED108-S2","codigo":"OPT_MMED108","nome":"Introdução à Ciência de Implementação","sem":2,"vagas":15,"anos":[5]},{"id":"OPT_MMED53-S1","codigo":"OPT_MMED53","nome":"Introdução à investigação em patologia molecular aplicada em oncologia","sem":1,"vagas":5,"anos":[3]},{"id":"OPT_MMED54-S2","codigo":"OPT_MMED54","nome":"Invasão & metastização","sem":2,"vagas":18,"anos":[4]},{"id":"OPT_MMED107-S2","codigo":"OPT_MMED107","nome":"Investigação com Dados Secundários em Saúde","sem":2,"vagas":5,"anos":[5]},{"id":"OPT_MMED125-S2","codigo":"OPT_MMED125","nome":"Investigação em Real-World Data - Estágio Optativo","sem":2,"vagas":12,"anos":[4]},{"id":"OPT_MMED57-S2","codigo":"OPT_MMED57","nome":"Investigação Laboratorial - avaliação funcional in vivo","sem":2,"vagas":6,"anos":[1,2,4,5]},{"id":"OPT_MMED60-S2","codigo":"OPT_MMED60","nome":"Medicina da reprodução, procriação medicamente assistida e cirurgia minimamente invasiva","sem":2,"vagas":3,"anos":[5]},{"id":"OPT_MMED61-S1","codigo":"OPT_MMED61","nome":"Medicina de viagem e saúde global","sem":1,"vagas":5,"anos":[4,5]},{"id":"OPT_MMED62-S2","codigo":"OPT_MMED62","nome":"Medicina do adolescente e do jovem adulto","sem":2,"vagas":4,"anos":[2]},{"id":"OPT_MMED63-S1","codigo":"OPT_MMED63","nome":"Medicina do exercício e desporto","sem":1,"vagas":23,"anos":[5]},{"id":"OPT_MMED105-S1","codigo":"OPT_MMED105","nome":"Medicina Narrativa","sem":1,"vagas":27,"anos":[3,4,5]},{"id":"OPT_MMED105-S2","codigo":"OPT_MMED105","nome":"Medicina Narrativa","sem":2,"vagas":2,"anos":[1,2,4,5]},{"id":"OPT_MMED104-S1","codigo":"OPT_MMED104","nome":"Metodologias de Investigação em Educação Médica","sem":1,"vagas":29,"anos":[3,4,5]},{"id":"OPT_MMED104-S2","codigo":"OPT_MMED104","nome":"Metodologias de Investigação em Educação Médica","sem":2,"vagas":28,"anos":[1,2,4,5]},{"id":"OPT_MMED103-S1","codigo":"OPT_MMED103","nome":"Modificações do estilo de vida na prevenção e tratamento das doenças civilizacionais","sem":1,"vagas":35,"anos":[3]},{"id":"OPT_MMED124-S1","codigo":"OPT_MMED124","nome":"Neuroanestesia - Estágio Optativo","sem":1,"vagas":6,"anos":[5]},{"id":"OPT_MMED124-S2","codigo":"OPT_MMED124","nome":"Neuroanestesia - Estágio Optativo","sem":2,"vagas":6,"anos":[5]},{"id":"OPT_MMED71-S2","codigo":"OPT_MMED71","nome":"Neurocirurgia","sem":2,"vagas":4,"anos":[5]},{"id":"OPT_MMED123-S1","codigo":"OPT_MMED123","nome":"Neurologia - Estágio Optativo","sem":1,"vagas":7,"anos":[5]},{"id":"OPT_MMED123-S2","codigo":"OPT_MMED123","nome":"Neurologia - Estágio Optativo","sem":2,"vagas":8,"anos":[5]},{"id":"OPT_MMED75-S1","codigo":"OPT_MMED75","nome":"Nutrição e prevenção das doenças crónicas","sem":1,"vagas":41,"anos":[3,5]},{"id":"OPT_MMED76-S1","codigo":"OPT_MMED76","nome":"Oftalmogeriatria","sem":1,"vagas":5,"anos":[5]},{"id":"OPT_MMED76-S2","codigo":"OPT_MMED76","nome":"Oftalmogeriatria","sem":2,"vagas":5,"anos":[5]},{"id":"OPT_MMED77-S2","codigo":"OPT_MMED77","nome":"Oftalmologia em idade pediátrica","sem":2,"vagas":5,"anos":[5]},{"id":"OPT_MMED80-S1","codigo":"OPT_MMED80","nome":"Patologia clínica e medicina laboratorial","sem":1,"vagas":5,"anos":[4,5]},{"id":"OPT_MMED80-S2","codigo":"OPT_MMED80","nome":"Patologia clínica e medicina laboratorial","sem":2,"vagas":4,"anos":[4,5]},{"id":"OPT_MMED82-S2","codigo":"OPT_MMED82","nome":"Planeamento familiar","sem":2,"vagas":1,"anos":[5]},{"id":"OPT_MMED113-S2","codigo":"OPT_MMED113","nome":"Resiliência e Inteligência Emocional em Medicina","sem":2,"vagas":21,"anos":[4,5]},{"id":"OPT_MMED88-S1","codigo":"OPT_MMED88","nome":"Saúde da comunidade centrada no doente","sem":1,"vagas":13,"anos":[3,4,5]},{"id":"OPT_MMED89-S1","codigo":"OPT_MMED89","nome":"Saúde, bem-estar e arquitetura","sem":1,"vagas":2,"anos":[3,4,5]},{"id":"OPT_MMED115-S1","codigo":"OPT_MMED115","nome":"Sistemas de Apoio à Decisão Clínica","sem":1,"vagas":20,"anos":[3,4,5]},{"id":"OPT_MMED90-S1","codigo":"OPT_MMED90","nome":"Stress e síndrome metabólica","sem":1,"vagas":24,"anos":[3,4,5]},{"id":"OPT_MMED90-S2","codigo":"OPT_MMED90","nome":"Stress e síndrome metabólica","sem":2,"vagas":11,"anos":[1,2]},{"id":"OPT_MMED91-S1","codigo":"OPT_MMED91","nome":"Tecnologias em Medicina: noções básicas de sinal e imagem","sem":1,"vagas":18,"anos":[3,4,5]},{"id":"OPT_MMED91-S2","codigo":"OPT_MMED91","nome":"Tecnologias em Medicina: noções básicas de sinal e imagem","sem":2,"vagas":18,"anos":[1,2,4,5]},{"id":"OPT_MMED102-S1","codigo":"OPT_MMED102","nome":"Terapêutica Digital e Medicina Personalizada","sem":1,"vagas":30,"anos":[4,5]},{"id":"OPT_MMED102-S2","codigo":"OPT_MMED102","nome":"Terapêutica Digital e Medicina Personalizada","sem":2,"vagas":29,"anos":[4]},{"id":"OPT_MMED93-S1","codigo":"OPT_MMED93","nome":"Transporte transmembranar e fisiopatologia humana","sem":1,"vagas":11,"anos":[3,4,5]},{"id":"OPT_MMED121-S1","codigo":"OPT_MMED121","nome":"Urgência em Anestesiologia - Estágio Optativo","sem":1,"vagas":19,"anos":[5]},{"id":"OPT_MMED121-S2","codigo":"OPT_MMED121","nome":"Urgência em Anestesiologia - Estágio Optativo","sem":2,"vagas":18,"anos":[5]},{"id":"OPT_MMED96-S1","codigo":"OPT_MMED96","nome":"Urgências em oftalmologia","sem":1,"vagas":5,"anos":[5]},{"id":"OPT_MMED96-S2","codigo":"OPT_MMED96","nome":"Urgências em oftalmologia","sem":2,"vagas":5,"anos":[5]},{"id":"OPT_MMED98-S2","codigo":"OPT_MMED98","nome":"Urologia pediátrica","sem":2,"vagas":6,"anos":[5]},{"id":"OPT_MMED99-S2","codigo":"OPT_MMED99","nome":"Yoseikan Budo I","sem":2,"vagas":26,"anos":[1]},{"id":"OPT_MMED100-S2","codigo":"OPT_MMED100","nome":"Yoseikan Budo II","sem":2,"vagas":17,"anos":[2]},{"id":"OPT_MMED101-S1","codigo":"OPT_MMED101","nome":"Yoseikan Budo III","sem":1,"vagas":19,"anos":[3]}]};
+/* DADOS-FIM */
+</script>
+<script>
+/* LOGICA-INICIO */
+const SEMESTRES = {1: "1.º semestre", 2: "2.º semestre"};
+const ANOS_TEXTO = [1, 2, 3, 4, 5].map(a => `${a}.º ano`);
+/* Preferência especial: se nenhuma das optativas acima dela for possível, o estudante fica na atual; as que
+   estão abaixo dela não contam. No Forms é a última opção de cada preferência (opcoes_forms.txt). */
+const MANTER = {id: "MANTER", manter: true, nome: "Manter a minha unidade curricular optativa atual"};
+function rotulo(o) { return o.manter ? o.nome : `${o.nome} (${o.codigo}), ${SEMESTRES[o.sem] || ""}`; }
+/* No Forms as 5 preferências são obrigatórias: as que faltam vão como «Manter», que tem o mesmo efeito. */
+function completarPrefs(prefs) { return [...prefs, ...Array(Math.max(0, 5 - prefs.length)).fill(MANTER)]; }
+/* O pedido só pede uma troca se houver pelo menos uma optativa antes de «Manter». */
+function pedeTroca(prefs) { return prefs.length > 0 && !prefs[0].manter; }
+function normalizar(s) { return String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+function ofertasDoAno(ofertas, ano) { return ofertas.filter(o => o.anos.includes(ano)); }
+function filtrar(lista, q) {
+  const n = normalizar(String(q).trim());
+  return n ? lista.filter(o => normalizar(o.nome + " " + o.codigo).includes(n)) : lista;
+}
+function vagasTexto(n) { return n === 0 ? "Sem vagas" : n === 1 ? "1 vaga" : `${n} vagas`; }
+function anoTexto(ano) { return `${ano}.º ano`; }
+function pedidoTexto(ano, prefs) {
+  return ["PEDIDO DE TROCA DE OPTATIVA 2026/2027", "", `Ano da optativa: ${anoTexto(ano)}`, "",
+    "Preferências, por ordem:", ...prefs.map((o, i) => `${i + 1}. ${rotulo(o)}`)].join("\n");
+}
+/* Opção a escolher em cada pergunta do formulário (sem o número de estudante), para o preenchimento à mão. */
+function camposFormulario(ano, prefs) {
+  return [{rotulo: "Ano da optativa", valor: anoTexto(ano)},
+    ...prefs.map((o, i) => ({rotulo: `${i + 1}.ª preferência`, valor: rotulo(o)}))];
+}
+/* Troca as respostas do link pré-preenchido de exemplo do Forms pelas escolhidas. O link de exemplo é feito
+   no «Obter link pré-preenchido» com um ano qualquer na pergunta do ano e, da 1.ª à 5.ª preferência, as cinco
+   primeiras opções da lista, por esta ordem (exemplosPrefs = rótulos de DADOS.ofertas[0..4]). Cada parâmetro é
+   reconhecido pelo valor, que pode vir simples, como texto JSON ("…") ou como lista JSON (["…"]); o valor novo
+   vai na mesma forma. Preferências em falta saem do link. Se o link não tiver o ano e as 5 preferências de
+   exemplo, cada um uma só vez, devolve null (a página usa então o link simples). Aceita «&amp;» no lugar de
+   «&» (link copiado de HTML ou de um email). */
+function prefillUrl(amostra, ano, prefs, exemplosPrefs) {
+  if (!amostra || !exemplosPrefs || exemplosPrefs.length < 5) return null;
+  amostra = String(amostra).trim().replace(/&amp;/g, "&");
+  const q = amostra.indexOf("?");
+  if (q < 0) return null;
+  const novos = [anoTexto(ano), ...[0, 1, 2, 3, 4].map(i => prefs[i] ? rotulo(prefs[i]) : "")];
+  const exemplos = exemplosPrefs.slice(0, 5), vistos = [0, 0, 0, 0, 0, 0], partes = [];
+  for (const pt of amostra.slice(q + 1).split("&")) {
+    const i = pt.indexOf("=");
+    let val = null;
+    if (i >= 0) { try { val = decodeURIComponent(pt.slice(i + 1).replace(/\+/g, " ")); } catch (e) { val = null; } }
+    let interior = val, forma = "simples";
+    if (val !== null) {
+      try {
+        const j = JSON.parse(val);
+        if (typeof j === "string") { interior = j; forma = "texto"; }
+        else if (Array.isArray(j) && j.length === 1 && typeof j[0] === "string") { interior = j[0]; forma = "lista"; }
+      } catch (e) { /* valor simples */ }
+    }
+    const k = interior === null ? -1 : ANOS_TEXTO.includes(interior) ? 0 : exemplos.indexOf(interior) + 1 || -1;
+    if (k < 0) { partes.push(pt); continue; }
+    vistos[k]++;
+    if (novos[k] === "") continue;
+    const v = forma === "texto" ? JSON.stringify(novos[k]) : forma === "lista" ? JSON.stringify([novos[k]]) : novos[k];
+    partes.push(pt.slice(0, i + 1) + encodeURIComponent(v));
+  }
+  return vistos.every(n => n === 1) ? amostra.slice(0, q + 1) + partes.join("&") : null;
+}
+/* LOGICA-FIM */
+</script>
+<script>
+/* CONFIGURACAO: links do formulário e prazo (mudar à mão) */
+const FORM_LINK = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=yBuCt8xne0S1eYL3hUF0_JiooqAiEYVGn6iPjCuxaKZURFQwVUIxN1ZQTk80MlFLVEZMSlZSQk9GQy4u";       // link do formulário (Forms → Recolher respostas → Copiar link)
+const PREFILL_SAMPLE = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=yBuCt8xne0S1eYL3hUF0_JiooqAiEYVGn6iPjCuxaKZURFQwVUIxN1ZQTk80MlFLVEZMSlZSQk9GQy4u&re806872187c14299997855f4d31721c5=%223.%C2%BA%20ano%22&r207364e9efed4ffab59201f153aad204=%22A%20ades%C3%A3o%20terap%C3%AAutica%20-%20da%20prescri%C3%A7%C3%A3o%20ao%20comportamento%20de%20ades%C3%A3o%20%28OPT_MMED01%29%2C%202.%C2%BA%20semestre%22&r8eae9765551245af89f5b5a7cdcb57ff=%22Administra%C3%A7%C3%A3o%20hospitalar%20%28OPT_MMED02%29%2C%202.%C2%BA%20semestre%22&rfcf2a471a1bb4bcc9bdc683fa178a1f5=%22%C3%81gua%20-%20na%20sa%C3%BAde%20e%20na%20doen%C3%A7a%20%28OPT_MMED03%29%2C%201.%C2%BA%20semestre%22&rc73ab25a9b8d42199d651deda8fddcab=%22%C3%81gua%20-%20na%20sa%C3%BAde%20e%20na%20doen%C3%A7a%20%28OPT_MMED03%29%2C%202.%C2%BA%20semestre%22&r7b499a21c5894a48b21e3bf6c9cc8ffc=%22Antropologia%20m%C3%A9dica%20-%20corpo-pessoa%2C%20a%20medicina%20para%20l%C3%A1%20da%20evid%C3%AAncia%20%28OPT_MMED06%29%2C%201.%C2%BA%20semestre%22";  // link pré-preenchido: um ano qualquer e, da 1.ª à 5.ª preferência, as 5 primeiras opções da lista (opcoes_forms.txt), por esta ordem
+const PRAZO = "";           // ex.: "até 30 de outubro, às 23h59"; vazio = não mostrar
+</script>
+<script>
+/* INTERFACE */
+const MAX = 5;
+const POR_ID = Object.fromEntries([...DADOS.ofertas, MANTER].map(o => [o.id, o]));
+const estado = {ano: 0, prefs: [], q: "", anoPendente: 0};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[ch]));
+const attr = s => String(s).replace(/["\\]/g, "\\$&");
+/* Para onde vai o foco quando o elemento focado desaparece ou fica desativado. */
+const RESERVA_FOCO = ["#prefs [data-tirar]", "#lista .uc:not([disabled])", "#tituloPrefs"];
+let confDesenhada = "", avisouAmostra = false;
+
+function guardar() {
+  try { localStorage.setItem("troca-optativas", JSON.stringify({ano: estado.ano, prefs: estado.prefs})); } catch (e) {}
+}
+function restaurar() {
+  try {
+    const s = JSON.parse(localStorage.getItem("troca-optativas") || "null");
+    if (s && [1, 2, 3, 4, 5].includes(s.ano)) {
+      estado.ano = s.ano;
+      estado.prefs = [...new Set(Array.isArray(s.prefs) ? s.prefs : [])]
+        .filter(id => POR_ID[id] && (POR_ID[id].manter || POR_ID[id].anos.includes(s.ano))).slice(0, MAX);
+    }
+  } catch (e) {}
+}
+const botaoAno = a => `#anos [data-ano="${a}"]`;
+function escolherAno(a) {
+  if (a === estado.ano) {
+    if (estado.anoPendente) { estado.anoPendente = 0; desenhar([botaoAno(a)]); }
+    return;
+  }
+  if (estado.prefs.length) { estado.anoPendente = a; desenhar(['#confAno [data-conf="nao"]']); return; }
+  mudarAno(a);
+}
+function mudarAno(a) {
+  estado.ano = a; estado.prefs = []; estado.q = ""; estado.anoPendente = 0; $("q").value = "";
+  guardar(); desenhar([botaoAno(a)]);
+}
+function manterAno() { estado.anoPendente = 0; desenhar([botaoAno(estado.ano)]); }
+function alternar(id, foco) {
+  const i = estado.prefs.indexOf(id);
+  if (i >= 0) estado.prefs.splice(i, 1);
+  else if (estado.prefs.length < MAX) estado.prefs.push(id);
+  guardar(); desenhar(foco);
+}
+function mover(i, d) {
+  const j = i + d;
+  if (j < 0 || j >= estado.prefs.length) return;
+  [estado.prefs[i], estado.prefs[j]] = [estado.prefs[j], estado.prefs[i]];
+  /* o foco acompanha a optativa movida; no topo ou no fim passa para a outra seta */
+  guardar(); desenhar([`#prefs [data-mover="${j}"][data-d="${d}"]`, `#prefs [data-mover="${j}"][data-d="${-d}"]`]);
+}
+
+function desenharAvisos() {
+  const v = DADOS.provisorio
+    ? "As vagas indicadas são provisórias."
+    : "As vagas indicadas não são atualizadas durante a troca.";
+  const fonte = DADOS.retrato
+    ? `Fonte das vagas: página de vagas da aplicação de inscrição${DADOS.provisorio ? " (provisórias)" : ""}.`
+    : "Fonte das vagas: vagas totais da aplicação de inscrição, ainda sem retrato da página de vagas (provisórias).";
+  $("avisoVagas").textContent = v;
+  $("avisoPrazo").textContent = PRAZO ? ` Podes enviar o pedido ${PRAZO}.` : "";
+  $("regraVagas").textContent = v + " As optativas sem vagas não aparecem na lista.";
+  $("rodape").textContent = `Optativas do MIMED 2026/2027. ${fonte} Dúvidas: ensino_pregraduado@med.up.pt.`;
+}
+function desenharAnos() {
+  if (!$("anos").children.length) {
+    $("anos").innerHTML = [1, 2, 3, 4, 5].map(a => `<button type="button" data-ano="${a}" aria-pressed="false">${a}.º ano</button>`).join("");
+  }
+  for (const b of $("anos").children) b.setAttribute("aria-pressed", String(+b.dataset.ano === estado.ano));
+  /* a confirmação só é redesenhada quando muda, para não ser anunciada a cada alteração */
+  const chave = estado.anoPendente ? `${estado.anoPendente}-${estado.ano}` : "";
+  if (chave === confDesenhada) return;
+  confDesenhada = chave;
+  $("confAno").innerHTML = estado.anoPendente
+    ? `<div class="box warn confirmar"><span id="confMsg">Mudar para o ${estado.anoPendente}.º ano apaga as tuas preferências.</span>
+       <button class="btn primary" type="button" data-conf="sim">Mudar e apagar</button>
+       <button class="btn" type="button" data-conf="nao">Manter o ${estado.ano}.º ano</button></div>`
+    : "";
+}
+function desenharPrefs() {
+  const p = estado.prefs.map(id => POR_ID[id]), m = estado.prefs.indexOf(MANTER.id);
+  const info = (o, i) => o.manter
+    ? (i === 0 ? "Em 1.º lugar, o pedido não pede nenhuma troca: põe antes dela as optativas que queres." : "Se nenhuma das optativas acima for possível, ficas na atual.")
+    : `${SEMESTRES[o.sem]}, ${vagasTexto(o.vagas)}` + (m >= 0 && i > m ? ". Não conta: está abaixo de «Manter»." : "");
+  $("prefs").innerHTML = p.length
+    ? p.map((o, i) => `<li><span class="n">${i + 1}.</span><span>${esc(o.nome)}${o.manter ? "" : ` <span class="tag ins">${esc(o.codigo)}</span>`}<br><small>${esc(info(o, i))}</small></span>
+        <span class="acoes"><button type="button" data-mover="${i}" data-d="-1" aria-label="Subir a ${i + 1}.ª preferência" ${i === 0 ? "disabled" : ""}>↑</button>
+        <button type="button" data-mover="${i}" data-d="1" aria-label="Descer a ${i + 1}.ª preferência" ${i === p.length - 1 ? "disabled" : ""}>↓</button>
+        <button type="button" data-tirar="${esc(o.id)}" aria-label="Retirar ${esc(o.nome)}, ${esc(SEMESTRES[o.sem])}">✕</button></span></li>`).join("")
+    : `<li><span class="vazio" style="grid-column:1/-1">Ainda não escolheste nenhuma optativa. Toca nas optativas da lista acima.</span></li>`;
+}
+function desenharLista() {
+  const cheio = estado.prefs.length >= MAX;
+  const lista = filtrar(ofertasDoAno(DADOS.ofertas, estado.ano), estado.q);
+  const pm = estado.prefs.indexOf(MANTER.id), offm = cheio && pm < 0;
+  /* «Manter» fica sempre no topo da lista, mesmo durante a pesquisa */
+  $("lista").innerHTML = `<button type="button" class="uc" data-id="${MANTER.id}" aria-pressed="${pm >= 0}" ${offm ? "disabled" : ""}>
+      <span class="bx">${pm >= 0 ? pm + 1 : ""}</span><span class="nm">${esc(MANTER.nome)}</span><span class="ec"></span>
+      <span class="sb">${offm ? "Já tens 5 preferências" : "Põe-na depois das optativas que queres: se nenhuma for possível, ficas na atual."}</span></button>`
+    + (lista.length ? lista.map(o => {
+    const pos = estado.prefs.indexOf(o.id), sel = pos >= 0, off = cheio && !sel;
+    const vag = o.vagas === 0 ? `<span class="tag sem">Sem vagas</span>` : esc(vagasTexto(o.vagas));
+    const sb = off ? "Já tens 5 preferências" : o.vagas === 0 ? "Só possível se alguém sair desta optativa" : "";
+    return `<button type="button" class="uc" data-id="${esc(o.id)}" aria-pressed="${sel}" ${off ? "disabled" : ""}>
+      <span class="bx">${sel ? pos + 1 : ""}</span><span class="nm">${esc(o.nome)} <span class="tag ins">${esc(o.codigo)}</span></span>
+      <span class="ec">${esc(SEMESTRES[o.sem])}, ${vag}</span>${sb ? `<span class="sb">${esc(sb)}</span>` : ""}</button>`;
+  }).join("") : `<p class="hint" style="padding:12px;margin:0">Nenhuma optativa encontrada.</p>`);
+}
+function desenharEnvio() {
+  const box = $("envio");
+  if (!estado.ano) { box.innerHTML = ""; return; }
+  const prefs = estado.prefs.map(id => POR_ID[id]), pronto = pedeTroca(prefs);
+  const pre = pronto ? prefillUrl(PREFILL_SAMPLE, estado.ano, completarPrefs(prefs), DADOS.ofertas.slice(0, 5).map(rotulo)) : null;
+  if (pronto && PREFILL_SAMPLE && !pre && !avisouAmostra) {
+    avisouAmostra = true;
+    console.warn("PREFILL_SAMPLE não tem o ano e as 5 primeiras opções da lista (uma em cada preferência, por ordem): a página usa o link simples.");
+  }
+  const link = pre || FORM_LINK, lab = pre ? "Abrir formulário preenchido" : "Abrir formulário";
+  let h = `<div class="send"><h3>3. Envia o pedido à Unidade de Gestão Académica</h3>`;
+  if (!pronto) h += prefs.length ? `<p>Põe pelo menos uma optativa antes de «${esc(MANTER.nome)}».</p>` : `<p>Escolhe pelo menos uma optativa acima.</p>`;
+  else if (pre) h += `<p>O formulário abre com o ano e as tuas preferências já escolhidos; as preferências que não indicaste vão como «Manter a minha unidade curricular optativa atual». Entra com a tua conta U.Porto, escreve o nome, o número mecanográfico e o email institucional, marca «Compreendo» e submete.</p>`;
+  else {
+    h += `<p>Abre o formulário, entra com a tua conta U.Porto e escreve o nome, o número mecanográfico e o email institucional. Depois escolhe em cada pergunta a opção indicada abaixo, marca «Compreendo» e submete.</p>`;
+    h += `<ul class="campos">` + camposFormulario(estado.ano, completarPrefs(prefs)).map((c, k) =>
+      `<li><span class="cr">${esc(c.rotulo)}</span><span class="cv" id="campo${k}">${esc(c.valor)}</span>
+</li>`).join("") + `</ul>`;
+  }
+  if (!link) h += `<p><strong>O formulário ainda não está disponível.</strong></p>`;
+  h += `<p class="hint"><strong>Só podes enviar um pedido</strong> e não o podes alterar depois. Confirma a ordem antes de submeter.</p><div class="botoes">`;
+  h += pronto && link
+    ? `<a class="btn primary" href="${esc(link)}" target="_blank" rel="noopener noreferrer">${lab}</a>`
+    : `<button class="btn primary" type="button" disabled>${lab}</button>`;
+  h += `<button class="btn" type="button" id="copiar" ${pronto ? "" : "disabled"}>Copiar o pedido</button> <span class="hint" id="copiado" role="status"></span></div></div>`;
+  box.innerHTML = h;
+}
+function focar(alvos) {
+  for (const s of [...alvos, ...RESERVA_FOCO]) {
+    const el = document.querySelector(s);
+    if (el && !el.disabled && el.getClientRects().length) { el.focus(); return; }
+  }
+}
+/* foco: seletores por ordem de preferência para o elemento que deve ficar focado depois de redesenhar */
+function desenhar(foco) {
+  desenharAnos();
+  $("passo2").hidden = !estado.ano;
+  if (estado.ano) { desenharPrefs(); desenharLista(); }
+  desenharEnvio();
+  if (foco) focar(foco);
+}
+async function paraAreaDeTransferencia(texto) {
+  try { await navigator.clipboard.writeText(texto); return true; } catch (e) {}
+  const antes = document.activeElement, t = document.createElement("textarea");
+  t.value = texto; t.readOnly = true; t.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+  document.body.appendChild(t); t.select();
+  let ok = false;
+  try { ok = document.execCommand("copy"); } catch (e) {}
+  t.remove();
+  if (antes && antes.focus) antes.focus();
+  return ok;
+}
+function selecionar(el) {
+  const r = document.createRange(); r.selectNodeContents(el);
+  const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+}
+async function copiar() {
+  const ok = await paraAreaDeTransferencia(pedidoTexto(estado.ano, estado.prefs.map(id => POR_ID[id])));
+  const antigo = $("pedidoManual");
+  if (antigo) antigo.remove();
+  if (ok) { $("copiado").textContent = "Copiado."; return; }
+  $("copiado").textContent = "Não foi possível copiar. O pedido está abaixo: seleciona-o e copia-o à mão.";
+  const p = document.createElement("pre");
+  p.className = "pedido"; p.id = "pedidoManual"; p.tabIndex = 0;
+  p.textContent = pedidoTexto(estado.ano, estado.prefs.map(id => POR_ID[id]));
+  $("envio").querySelector(".send").appendChild(p);
+  selecionar(p);
+}
+
+document.addEventListener("click", ev => {
+  const b = ev.target.closest("button");
+  if (!b || b.disabled) return;
+  const d = b.dataset;
+  if (d.ano) escolherAno(+d.ano);
+  else if (d.conf) { if (d.conf === "sim") mudarAno(estado.anoPendente); else manterAno(); }
+  else if (d.id) alternar(d.id, [`#lista [data-id="${attr(d.id)}"]`]);
+  else if (d.tirar) {
+    /* depois de retirar: o ✕ da linha seguinte (que sobe para esta posição), senão o da anterior */
+    const i = estado.prefs.indexOf(d.tirar);
+    alternar(d.tirar, [`#prefs li:nth-child(${i + 1}) [data-tirar]`, `#prefs li:nth-child(${i}) [data-tirar]`]);
+  }
+  else if (d.mover) mover(+d.mover, +d.d);
+  else if (b.id === "copiar") copiar();
+});
+$("q").addEventListener("input", e => { estado.q = e.target.value; desenharLista(); });
+
+restaurar();
+desenharAvisos();
+desenhar();
+</script>
+</body>
+</html>
