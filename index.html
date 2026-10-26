@@ -47,6 +47,9 @@ h2{font-size:1.15rem;margin:30px 0 8px;font-weight:600}
 h3{font-size:1rem;margin:20px 0 8px;font-weight:600}
 .hint{color:var(--muted);font-size:.92rem;margin:0 0 12px}
 label.field{display:block;font-weight:600;margin:16px 0 6px}
+.filtro{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:.93rem;cursor:pointer}
+.filtro input{width:18px;height:18px;margin:0;accent-color:var(--accent)}
+.filtro input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 input[type=search]{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:100%;max-width:420px;margin:0 0 10px}
 .ucgrid{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .uc{font:inherit;font-size:.92rem;text-align:left;width:100%;display:grid;grid-template-columns:22px 1fr auto;gap:2px 10px;align-items:start;padding:10px 12px;border:0;border-top:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;line-height:1.3}
@@ -108,7 +111,7 @@ footer{color:var(--muted);font-size:.82rem;margin-top:28px}
   </div>
 </header>
 <main class="wrap">
-  <div class="box warn" style="margin-top:20px;border-left:6px solid var(--ink)"><strong>Antes de começares:</strong>
+  <div class="box warn" style="margin-top:20px;border-left:6px solid var(--ink)"><strong>Antes de começar:</strong>
     <div>O pedido é analisado pela Unidade de Gestão Académica por ordem de chegada e é aceite caso a caso, só se não inviabilizar o funcionamento da UC em que já está inscrito(a). Até à decisão, mantém a optativa atual. <span id="avisoVagas"></span><span id="avisoPrazo"></span></div>
   </div>
   <section>
@@ -122,6 +125,7 @@ footer{color:var(--muted);font-size:.82rem;margin-top:28px}
     <p class="hint">Toque nas optativas pela ordem em que as prefere, até 5: aparecem por ordem em «As minhas preferências», no fim da lista. Tocar outra vez retira. Pode escolher optativas sem vagas, mas só são possíveis se alguém sair delas durante a troca: não há qualquer garantia e é por sua conta e risco. Se preferir ficar na sua optativa a ir para alguma das outras, escolha «Manter a minha unidade curricular optativa atual» logo a seguir às que pretende.</p>
     <label class="field" for="q">Procurar optativa</label>
     <input id="q" type="search" placeholder="Nome ou código" autocomplete="off">
+    <label class="filtro"><input id="soVagas" type="checkbox" checked> Mostrar só optativas com vagas</label>
     <div class="ucgrid" id="lista"></div>
     <h3 id="tituloPrefs" tabindex="-1">As minhas preferências</h3>
     <ol class="prefs" id="prefs"></ol>
@@ -161,6 +165,8 @@ function completarPrefs(prefs) { return [...prefs, ...Array(Math.max(0, 5 - pref
 function pedeTroca(prefs) { return prefs.length > 0 && !prefs[0].manter; }
 function normalizar(s) { return String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
 function ofertasDoAno(ofertas, ano) { return ofertas.filter(o => o.anos.includes(ano)); }
+/* Só as ofertas com vagas, mais as já escolhidas (para não desaparecerem da lista ao ligar o filtro). */
+function soComVagas(lista, escolhidas) { return lista.filter(o => o.vagas > 0 || escolhidas.includes(o.id)); }
 function filtrar(lista, q) {
   const n = normalizar(String(q).trim());
   return n ? lista.filter(o => normalizar(o.nome + " " + o.codigo).includes(n)) : lista;
@@ -223,7 +229,7 @@ const PRAZO = "";           // ex.: "até 30 de outubro, às 23h59"; vazio = nã
 /* INTERFACE */
 const MAX = 5;
 const POR_ID = Object.fromEntries([...DADOS.ofertas, MANTER].map(o => [o.id, o]));
-const estado = {ano: 0, prefs: [], q: "", anoPendente: 0};
+const estado = {ano: 0, prefs: [], q: "", anoPendente: 0, soVagas: true};
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[ch]));
 const attr = s => String(s).replace(/["\\]/g, "\\$&");
@@ -311,7 +317,8 @@ function desenharPrefs() {
 }
 function desenharLista() {
   const cheio = estado.prefs.length >= MAX;
-  const lista = filtrar(ofertasDoAno(DADOS.ofertas, estado.ano), estado.q);
+  const todas = filtrar(ofertasDoAno(DADOS.ofertas, estado.ano), estado.q);
+  const lista = estado.soVagas ? soComVagas(todas, estado.prefs) : todas, escondidas = todas.length - lista.length;
   const pm = estado.prefs.indexOf(MANTER.id), offm = cheio && pm < 0;
   /* «Manter» fica sempre no topo da lista, mesmo durante a pesquisa */
   $("lista").innerHTML = `<button type="button" class="uc" data-id="${MANTER.id}" aria-pressed="${pm >= 0}" ${offm ? "disabled" : ""}>
@@ -320,11 +327,12 @@ function desenharLista() {
     + (lista.length ? lista.map(o => {
     const pos = estado.prefs.indexOf(o.id), sel = pos >= 0, off = cheio && !sel;
     const vag = o.vagas === 0 ? `<span class="tag sem">Sem vagas</span>` : esc(vagasTexto(o.vagas));
-    const sb = off ? "Já tem 5 preferências" : o.vagas === 0 ? "Só se alguém sair dela durante a troca, sem garantia" : "";
+    const sb = off ? "Já tem 5 preferências" : "";
     return `<button type="button" class="uc" data-id="${esc(o.id)}" aria-pressed="${sel}" ${off ? "disabled" : ""}>
       <span class="bx">${sel ? pos + 1 : ""}</span><span class="nm">${esc(o.nome)} <span class="tag ins">${esc(o.codigo)}</span></span>
       <span class="ec">${esc(SEMESTRES[o.sem])}, ${vag}</span>${sb ? `<span class="sb">${esc(sb)}</span>` : ""}</button>`;
-  }).join("") : `<p class="hint" style="padding:12px;margin:0">Nenhuma optativa encontrada.</p>`);
+  }).join("") : `<p class="hint" style="padding:12px;margin:0">Nenhuma optativa encontrada.</p>`)
+    + (escondidas ? `<p class="hint" style="padding:10px 12px;margin:0;border-top:1px solid var(--line)">${escondidas === 1 ? "1 optativa sem vagas não aparece" : `${escondidas} optativas sem vagas não aparecem`}: desligue «Mostrar só optativas com vagas» para as ver.</p>` : "");
 }
 function desenharEnvio() {
   const box = $("envio");
@@ -336,7 +344,7 @@ function desenharEnvio() {
     console.warn("PREFILL_SAMPLE não tem o ano e as 5 primeiras opções da lista (uma em cada preferência, por ordem): a página usa o link simples.");
   }
   const link = pre || FORM_LINK, lab = pre ? "Abrir formulário preenchido" : "Abrir formulário";
-  let h = `<div class="send"><h3>3. Envia o pedido à Unidade de Gestão Académica</h3>`;
+  let h = `<div class="send"><h3>3. Envie o pedido à Unidade de Gestão Académica</h3>`;
   if (!pronto) h += prefs.length ? `<p>Coloque pelo menos uma optativa antes de «${esc(MANTER.nome)}».</p>` : `<p>Escolha pelo menos uma optativa acima.</p>`;
   else if (pre) h += `<p>O formulário abre com o ano e as suas preferências já escolhidos; as preferências que não indicou vão como «Manter a minha unidade curricular optativa atual». Entre com a sua conta U.Porto, escreva o nome, o número mecanográfico e o email institucional, marque «Compreendo» e submeta.</p>`;
   else {
@@ -411,6 +419,7 @@ document.addEventListener("click", ev => {
   else if (b.id === "copiar") copiar();
 });
 $("q").addEventListener("input", e => { estado.q = e.target.value; desenharLista(); });
+$("soVagas").addEventListener("change", e => { estado.soVagas = e.target.checked; desenharLista(); });
 
 restaurar();
 desenharAvisos();
